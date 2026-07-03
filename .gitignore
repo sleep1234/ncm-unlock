@@ -12,3 +12,6 @@
 *.dex
 *.class
 *.log
+# Large binary files
+*.so
+*.jar
