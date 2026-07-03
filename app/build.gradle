@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 34
+
+    defaultConfig {
+        applicationId "com.raincat.ncm_unlock"
+        minSdkVersion 21
+        targetSdkVersion 34
+        versionCode 500
+        versionName "5.0.0-ncm-unlock"
+        ndkVersion "26.1.10909125"
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("../debug.keystore")
+            storePassword "android"
+            keyAlias "AndroidDebugKey"
+            keyPassword "android"
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            shrinkResources false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                if (buildType.name == 'release') {
+                    def createTime = new Date().format("YYYYMMdd", TimeZone.getTimeZone("GMT+08:00"))
+                    outputFileName = "ncm-unlock_" + defaultConfig.versionName + "_" + createTime + "-" + buildType.name + ".apk"
+                }
+            }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    compileOnly 'de.robv.android.xposed:api:82'
+    compileOnly 'de.robv.android.xposed:api:82:sources'
+    implementation 'com.google.code.gson:gson:2.8.9'
+}

@@ -1,0 +1,26 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:4.0.2"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        // Xposed API (only available on jcenter/rovo89 repo)
+        maven { url "https://api.xposed.info/" }
+        jcenter()
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

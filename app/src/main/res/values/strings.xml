@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">NCM Unlock</string>
+
+    <string name="xposed_description">网易云音乐 VIP 歌曲解锁独立模块（GD Studio 音源替换）</string>
+
+    <string-array name="package_scope">
+        <item>com.netease.cloudmusic</item>
+    </string-array>
+</resources>
