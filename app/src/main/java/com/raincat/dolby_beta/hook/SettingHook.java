@@ -504,6 +504,18 @@ public class SettingHook {
         switchLayout.addView(toastSwitch);
         layout.addView(switchLayout);
 
+        // 署名
+        TextView creditView = new TextView(context);
+        creditView.setText("—— 毛利老王");
+        creditView.setTextSize(13);
+        creditView.setTextColor(0xFF999999);
+        creditView.setGravity(android.view.Gravity.END);
+        LinearLayout.LayoutParams creditLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        creditLp.topMargin = dp2px(16);
+        creditView.setLayoutParams(creditLp);
+        layout.addView(creditView);
+
         builder.setView(layout);
         builder.setPositiveButton("确定", (dialog, which) -> {
             int selectedId = radioGroup.getCheckedRadioButtonId();
