@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.raincat.dolby_beta.helper.EAPIHelper;
+import com.raincat.dolby_beta.helper.SettingsHelper;
 import com.raincat.dolby_beta.utils.NeteaseAES2;
 
 import org.json.JSONArray;
@@ -205,7 +206,11 @@ public class EAPIHook {
             debugLog("[V94] player/url: prefetching GD URLs for " + songIds.size() + " songs: " + songIds);
 
             for (Long songId : songIds) {
-                String gdUrl = EAPIHelper.fetchUrlFromGD(songId, 999);
+                int quality = SettingsHelper.getAudioQuality();
+                String gdUrl = EAPIHelper.fetchUrlFromGD(songId, quality);
+                if (gdUrl == null && quality != SettingsHelper.QUALITY_LOSSLESS) {
+                    gdUrl = EAPIHelper.fetchUrlFromGD(songId, SettingsHelper.QUALITY_LOSSLESS);
+                }
                 if (gdUrl != null) {
                     debugLog("[V94] Prefetch OK for song " + songId);
                 } else {
@@ -453,7 +458,11 @@ public class EAPIHook {
             // VIP songs (fee>0) or trial songs → replace URL via GD API
             if ((hasFreeTrial || fee > 0) && songId > 0) {
                 debugLog("[V91-PRI] id=" + songId + " needs GD URL (freeTrial=" + hasFreeTrial + " fee=" + fee + ")");
-                String gdUrl = EAPIHelper.fetchUrlFromGD(songId, 999);
+                int quality = SettingsHelper.getAudioQuality();
+                String gdUrl = EAPIHelper.fetchUrlFromGD(songId, quality);
+                if (gdUrl == null && quality != SettingsHelper.QUALITY_LOSSLESS) {
+                    gdUrl = EAPIHelper.fetchUrlFromGD(songId, SettingsHelper.QUALITY_LOSSLESS);
+                }
                 if (gdUrl != null) {
                     song.put("url", gdUrl);
                     debugLog("[V91-PRI] id=" + songId + " GD API URL set OK => " + gdUrl);
@@ -641,7 +650,11 @@ public class EAPIHook {
                 // VIP songs (fee>0) with null/trial URL → replace via GD API
                 if ((url == null || hasFreeTrial || fee > 0) && songId > 0) {
                     debugLog("[V91-LOC] id=" + songId + " fetching GD API (urlNull=" + (url==null) + " freeTrial=" + hasFreeTrial + " fee=" + fee + ")");
-                    String gdUrl = EAPIHelper.fetchUrlFromGD(songId, 999);
+                    int quality = SettingsHelper.getAudioQuality();
+                    String gdUrl = EAPIHelper.fetchUrlFromGD(songId, quality);
+                    if (gdUrl == null && quality != SettingsHelper.QUALITY_LOSSLESS) {
+                        gdUrl = EAPIHelper.fetchUrlFromGD(songId, SettingsHelper.QUALITY_LOSSLESS);
+                    }
                     if (gdUrl != null) {
                         song.put("url", gdUrl);
                         debugLog("[V91-LOC] id=" + songId + " GD API URL set OK => " + gdUrl);

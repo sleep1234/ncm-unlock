@@ -2,10 +2,12 @@ package com.raincat.dolby_beta;
 
 import android.content.Context;
 
+import com.raincat.dolby_beta.helper.SettingsHelper;
 import com.raincat.dolby_beta.hook.BlackHook;
 import com.raincat.dolby_beta.hook.DownloadMD5Hook;
 import com.raincat.dolby_beta.hook.EAPIHook;
 import com.raincat.dolby_beta.hook.GrayHook;
+import com.raincat.dolby_beta.hook.SettingHook;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -37,14 +39,53 @@ public class Hook {
 
                         XposedBridge.log("[ncm-unlock] initializing in main process, versionCode=" + versionCode);
 
-                        // 黑胶 VIP 伪装
-                        new BlackHook(context, versionCode);
-                        // 不变灰
-                        new GrayHook(context);
-                        // EAPI 拦截（VIP 歌曲 URL 替换）
-                        new EAPIHook(context, versionCode, context.getClassLoader());
-                        // 下载 MD5 校验绕过
-                        new DownloadMD5Hook(context);
+                        try {
+                            // 初始化设置
+                            SettingsHelper.init(context);
+                            XposedBridge.log("[ncm-unlock] SettingsHelper OK");
+                        } catch (Throwable t) {
+                            XposedBridge.log("[ncm-unlock] SettingsHelper FAILED: " + t.getMessage());
+                        }
+
+                        try {
+                            // 设置页面 Hook
+                            new SettingHook(context, versionCode);
+                            XposedBridge.log("[ncm-unlock] SettingHook OK");
+                        } catch (Throwable t) {
+                            XposedBridge.log("[ncm-unlock] SettingHook FAILED: " + t.getMessage());
+                        }
+
+                        try {
+                            // 黑胶 VIP 伪装
+                            new BlackHook(context, versionCode);
+                            XposedBridge.log("[ncm-unlock] BlackHook OK");
+                        } catch (Throwable t) {
+                            XposedBridge.log("[ncm-unlock] BlackHook FAILED: " + t.getMessage());
+                        }
+
+                        try {
+                            // 不变灰
+                            new GrayHook(context);
+                            XposedBridge.log("[ncm-unlock] GrayHook OK");
+                        } catch (Throwable t) {
+                            XposedBridge.log("[ncm-unlock] GrayHook FAILED: " + t.getMessage());
+                        }
+
+                        try {
+                            // EAPI 拦截（VIP 歌曲 URL 替换）
+                            new EAPIHook(context, versionCode, context.getClassLoader());
+                            XposedBridge.log("[ncm-unlock] EAPIHook OK");
+                        } catch (Throwable t) {
+                            XposedBridge.log("[ncm-unlock] EAPIHook FAILED: " + t.getMessage());
+                        }
+
+                        try {
+                            // 下载 MD5 校验绕过
+                            new DownloadMD5Hook(context);
+                            XposedBridge.log("[ncm-unlock] DownloadMD5Hook OK");
+                        } catch (Throwable t) {
+                            XposedBridge.log("[ncm-unlock] DownloadMD5Hook FAILED: " + t.getMessage());
+                        }
 
                         XposedBridge.log("[ncm-unlock] all hooks initialized");
                     }

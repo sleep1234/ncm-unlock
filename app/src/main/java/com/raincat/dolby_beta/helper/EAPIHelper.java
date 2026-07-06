@@ -37,6 +37,7 @@ public class EAPIHelper {
     }
 
     private static void showToast(String msg) {
+        if (!SettingsHelper.isToastEnabled()) return;
         debugLog("showToast: " + msg + " ctx=" + (appContext != null ? "ok" : "null"));
         if (appContext == null) return;
         mainHandler.post(() -> {
@@ -188,7 +189,13 @@ public class EAPIHelper {
                 // VIP 歌曲 → GD API 替换
                 if (hadFreeTrial || isVip) {
                     vipCount++;
-                    GDResult gd = fetchGDResult(bean.getId(), 999);
+                    // 使用用户设置的音质，获取不到时用 999 兜底
+                    int quality = SettingsHelper.getAudioQuality();
+                    GDResult gd = fetchGDResult(bean.getId(), quality);
+                    if (gd == null && quality != SettingsHelper.QUALITY_LOSSLESS) {
+                        debugLog("song " + bean.getId() + " quality=" + quality + " failed, fallback to 999");
+                        gd = fetchGDResult(bean.getId(), SettingsHelper.QUALITY_LOSSLESS);
+                    }
                     if (gd != null) {
                         bean.setUrl(gd.url);
                         bean.setBr(gd.br);
